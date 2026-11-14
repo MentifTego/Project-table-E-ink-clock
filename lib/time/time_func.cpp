@@ -42,8 +42,7 @@ std::string get_data_string(DateTime time){
     return(data);
 }
 
-void set_next_alarm()
-{
+void set_next_alarm() {
     DateTime now = rtc.now();
 
     rtc.clearAlarm(1);
@@ -53,11 +52,10 @@ void set_next_alarm()
 
     rtc.setAlarm1(
         alarm,
-        DS3231_A1_Minute
+        DS3231_A1_Second
     );
 }
 
-void clear_alarm()
-{
+void clear_alarm(){
     rtc.clearAlarm(1);
 }
