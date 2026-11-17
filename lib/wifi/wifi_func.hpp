@@ -13,7 +13,7 @@ struct WeatherData
 {
     uint8_t temperature;
     uint8_t humidity;
-    uint8_t weatherCode;
+    uint16_t weatherCode;
 };
 
 bool get_weather(WeatherData &weather);

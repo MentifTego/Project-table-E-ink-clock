@@ -36,8 +36,6 @@ void rtc_alarm() {
 
 void setup()
 {   
-    blink(1, 500, 0);
-
     Serial.begin(115200);
 
     blink(2, 150, 150);
@@ -50,7 +48,7 @@ void setup()
 
     if (!connect_wifi()) { //подключение к wifi
         blink(3, 500, 500);
-        return;
+        rp2040.reboot();
     } else {
         blink(2, 150, 150);
     }
@@ -58,8 +56,8 @@ void setup()
     init_display(0, true);
     set_color(GxEPD_BLACK);
     
-    bool flag = get_weather(weather_data); //получение данных о погоде 
-    if (!flag){
+    //получение данных о погоде 
+    if (!get_weather(weather_data)){
         blink(3, 500, 500);
     } else {
         blink(2, 150, 150);
@@ -85,7 +83,7 @@ void setup()
 
 
 bool get_weather_func(){
-    if(current_time.minute() % 20 == 0){
+    if(current_time.minute() % 30 == 0){
         if (!connect_wifi()) return false;
             
         if (!get_weather(weather_data)){
@@ -104,11 +102,10 @@ bool get_weather_func(){
 
 void loop()
 {
-    if(!rtc_trigger){
-        delay(1000);
-        return;
+    while (!rtc_trigger) {
+        __wfi();    
     }
-
+    
     Serial.println("Alarm");
     blink(1, 150, 0);
 

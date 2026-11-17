@@ -71,29 +71,55 @@ void buffer_weather_bar(uint16_t x, uint16_t y, WeatherData data){
     Serial.printf("weatherCode %d temperature %d humidity %d\n", data.weatherCode, data.temperature, data.humidity);
 
     switch (data.weatherCode){
-    case 0:
+    case 113:
         bitmap_select = clear;
         break;
-    case 1 ... 3:
+    case 116:
+    case 119:
+    case 122:
         bitmap_select = cloudy;
         break;
-    case 45:
-    case 48:
+    case 143:
+    case 248:
+    case 260:
         bitmap_select = fog;
         break;
-    case 51 ... 67:   
-    case 80 ... 82:   
+    case 176:   
+    case 263:
+    case 266:
+    case 293:
+    case 296:
+    case 299: 
+    case 302:
+    case 305:
+    case 308:
+    case 353:
+    case 356:
+    case 359:
         bitmap_select = rain;
         break;
-    case 71 ... 77:  
-    case 85:
-    case 86:          
+    case 179:  
+    case 227:
+    case 230:   
+    case 323:
+    case 326: 
+    case 329:
+    case 332: 
+    case 335:
+    case 338: 
+    case 368:
+    case 371:        
         bitmap_select = snow;
         break;
-    case 95 ... 99:   
+    case 200:   
+    case 386:  
+    case 389:  
+    case 392:  
+    case 395:  
         bitmap_select = thunderstorm;
         break;
     default:
+        Serial.println("unknown weather code");
         bitmap_select = clear;
         break;
 }

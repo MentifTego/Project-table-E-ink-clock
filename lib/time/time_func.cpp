@@ -17,7 +17,6 @@ void init_time(time_t now){
   }
     delay(100);
     rtc.adjust(DateTime(now));
-    Serial.println(now);
 }
 
 DateTime get_time(){
@@ -52,7 +51,7 @@ void set_next_alarm() {
 
     rtc.setAlarm1(
         alarm,
-        DS3231_A1_Second
+        DS3231_A1_Minute
     );
 }
 

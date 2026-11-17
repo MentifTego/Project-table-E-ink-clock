@@ -6,6 +6,7 @@
 #include "wifi_func.hpp"
 
 bool connect_wifi(){
+    WiFi.defaultLowPowerMode(); //важно
     WiFi.mode(WIFI_STA);
     WiFi.begin("TP-Link_D8D2", "89499689");
     //WiFi.begin("Denis", "987654321!");
@@ -32,8 +33,9 @@ bool connect_wifi(){
 }
 
 void disconnect_wifi(){
-    WiFi.disconnect();
-    WiFi.mode(WIFI_OFF);
+    WiFi.disconnect(true);
+    WiFi.end();
+    delay(10);
     Serial.println("disconnect WIFI");
 }
 
@@ -70,10 +72,11 @@ bool check_connect(){
 
 bool get_weather(WeatherData &weather){
     String url =
-        "https://api.open-meteo.com/v1/forecast?"
-        "latitude=" + String(LAT, 4) +
-        "&longitude=" + String(LON, 4) +
-        "&current=temperature_2m,relative_humidity_2m,weather_code";
+        "https://wttr.in/" + 
+        String(LAT, 4) +
+        "," + 
+        String(LON, 4) +
+        "?format=j2";
 
     WiFiClientSecure client;
     client.setInsecure(); 
@@ -89,42 +92,26 @@ bool get_weather(WeatherData &weather){
     int httpCode = http.GET();
     Serial.println(http.errorToString(httpCode));
 
-    String response = http.getString();
-
-    WiFiClient tcp;
-    IPAddress target(157, 90, 83, 168);
-
-    bool connected = tcp.connect(target, 443);
-    Serial.println(connected ? "TCP to IP:443 OK" : "TCP to IP:443 FAIL");
-    tcp.stop();
-
     if (httpCode != HTTP_CODE_OK){
-        Serial.print("response: ");
-        Serial.print(response);
-        Serial.print(" httpCode: ");
-        Serial.print(httpCode);
-        Serial.print(" HTTP_CODE_OK: ");
-        Serial.println(HTTP_CODE_OK);
+        Serial.println("HTTP_CODE_OK - False");
         http.end();
         return false;
     }
-
-    http.end();
-
+    
     JsonDocument doc;
 
-    DeserializationError error = deserializeJson(doc, response);
+    DeserializationError error = deserializeJson(doc, http.getStream());
 
     if (error){
-        Serial.println(3);
+        Serial.println(error.c_str());
+        http.end();
         return false;
     }
         
-    JsonObject current = doc["current"];
+    JsonObject current = doc["current_condition"][0];
 
-    weather.temperature = current["temperature_2m"];
-    weather.humidity    = current["relative_humidity_2m"];
-    weather.weatherCode = current["weather_code"];
-
+    weather.temperature = current["temp_C"];
+    weather.humidity    = current["humidity"];
+    weather.weatherCode = current["weatherCode"];
     return true;
 }
